@@ -1,18 +1,34 @@
-Simple Columnar File Format from Scratch
+# Simple Columnar File Format from Scratch
 
-This project implements a simplified analytical columnar file format inspired by Parquet.
-It is built from scratch to demonstrate how modern analytics file formats store data,
-compress it, and allow efficient selective column reads.
 
-----------------------------------------
 
-````markdown
-Project Structure:
+This project implements a **simplified analytical columnar file format**, inspired by modern data formats such as **Apache Parquet**.
+It is built completely **from scratch** to demonstrate how analytical storage systems work internally.
+
+The goal of this project is **learning and demonstration**, not production usage.
+It focuses on understanding **binary file layout, column-wise storage, compression, metadata management, and efficient selective reads**.
+
+---
+
+## Key Concepts Demonstrated
+
+* Column-oriented data storage
+* Custom binary file format design
+* Header metadata with column offsets
+* Per-column compression using `zlib`
+* Efficient selective column reads (column pruning)
+* File seeking for performance
+* CSV ↔ custom format conversion
+* Basic benchmarking of access patterns
+
+---
+
+## Project Structure
 
 ```
 Simple-Columnar-File-Format/
 ├── README.md
-│   └── Project overview and step-by-step verification instructions
+│   └── Project overview and verification steps
 ├── SPEC.md
 │   └── Formal binary file format specification
 ├── writer.py
@@ -29,110 +45,132 @@ Simple-Columnar-File-Format/
 ├── benchmark.py
 │   └── Compares CSV scanning vs selective column reads
 ├── sample.csv
-│   └── Small CSV file for basic correctness testing
+│   └── Small CSV file for correctness testing
 ├── big_sample.csv
 │   └── Large CSV file for performance demonstration
 ├── sample.custom
-│   └── Custom columnar file generated from sample.csv
+│   └── Custom file generated from sample.csv
 ├── big_sample.custom
-│   └── Custom columnar file generated from big_sample.csv
+│   └── Custom file generated from big_sample.csv
 ├── output_full.csv
-│   └── Full CSV reconstructed from the custom format
+│   └── Full CSV reconstructed from custom format
 └── output_selected.csv
     └── CSV containing only selected columns
 ```
 
-README.md
-- Explains the project, verification steps, and expected outputs.
+---
 
-SPEC.md
-- Defines the binary file format specification including header layout,
-  data types, offsets, and compression details.
+## File Format Design
 
-writer.py
-- Reads a CSV file.
-- Splits data column-wise.
-- Serializes each column into binary form.
-- Compresses each column using zlib.
-- Writes header metadata and column blocks.
+The custom file format is **binary and columnar**.
 
-reader.py
-- Parses the file header.
-- Reads schema and column offsets.
-- Supports full reads and selective column reads using file seeking.
+### High-level layout
 
-csv_to_custom.py
-- Command-line tool to convert CSV to the custom columnar format.
+* **Header**
 
-custom_to_csv.py
-- Command-line tool to convert the custom format back to CSV.
-- Supports optional selective column export.
+  * Magic number
+  * Number of rows
+  * Schema (column names and data types)
+  * Offsets and sizes of each column block
+* **Column Data Blocks**
 
-generate_big_csv.py
-- Generates a large CSV file for performance testing.
+  * Each column stored independently
+  * Each column compressed using `zlib`
 
-benchmark.py
-- Compares CSV column scanning vs selective column read from custom format.
+This layout allows the reader to **jump directly to required columns** without scanning the entire file.
+
+Full details are documented in **`SPEC.md`**.
+
+---
+
+## What Was Built
+
+* A custom binary columnar file format
+* A formal specification (`SPEC.md`)
+* Column-wise storage with per-column compression
+* Metadata-based column offsets for direct seeking
+* CSV → custom format writer
+* Custom format → CSV reader
+* Support for selective column reads
+* Command-line tools for conversion
+* Benchmark to demonstrate performance concept
+
+---
+
+## How to Verify (Step by Step)
+
+### 1. Generate a large CSV file
+
+```bash
+python generate_big_csv.py
+```
+
+**Output**
+
+* `big_sample.csv`
+
+---
+
+### 2. Convert CSV to custom columnar format
+
+```bash
+python csv_to_custom.py big_sample.csv big_sample.custom
+```
+
+**Output**
+
+* `big_sample.custom`
+
+---
+
+### 3. Convert full data back to CSV
+
+```bash
+python custom_to_csv.py big_sample.custom output_full.csv
+```
+
+**Output**
+
+* `output_full.csv`
+* Confirms **lossless round-trip conversion**
+
+---
+
+### 4. Convert selected columns only
+
+```bash
+python custom_to_csv.py big_sample.custom output_selected.csv score salary
+```
+
+**Output**
+
+* `output_selected.csv`
+* Contains only selected columns
+* Demonstrates **selective column read (column pruning)**
+
+---
+
+### 5. Run benchmark
+
+```bash
+python benchmark.py
+```
+
+**Output**
+
+* CSV full scan time
+* Custom format selective column read time
+* Demonstrates the **performance advantage concept** of columnar storage
+  (timings may be small for small datasets)
+
+---
+
+## Verification Summary
+
+* `output_full.csv` proves correctness and lossless conversion
+* `output_selected.csv` proves selective column access
+* `benchmark.py` demonstrates the efficiency concept of columnar formats
+
+---
 
 
-----------------------------------------
-
-What was built:
-
-- A custom binary columnar file format with a defined specification (SPEC.md)
-- Column-wise storage with per-column compression
-- Header metadata storing column offsets for direct seeking
-- A writer to convert CSV into the custom format
-- A reader that supports selective column reads
-- CLI tools for conversion
-- Benchmarks to demonstrate the performance concept
-
-----------------------------------------
-
-How to verify (step by step):
-
-1. Generate a large CSV file:
-   python generate_big_csv.py
-
-   Output:
-   - big_sample.csv (large input dataset)
-
-2. Convert CSV to custom columnar format:
-   python csv_to_custom.py big_sample.csv big_sample.custom
-
-   Output:
-   - big_sample.custom (binary columnar file)
-
-3. Convert full data back to CSV:
-   python custom_to_csv.py big_sample.custom output_full.csv
-
-   Output:
-   - output_full.csv
-   - Contains all columns and proves round-trip correctness
-
-4. Convert selected columns only:
-   python custom_to_csv.py big_sample.custom output_selected.csv score salary
-
-   Output:
-   - output_selected.csv
-   - Contains only selected columns
-   - Proves selective column read (column pruning)
-
-5. Run benchmark:
-   python benchmark.py
-
-   Output:
-   - Prints CSV read time vs custom selective read time
-   - Demonstrates performance concept (times may be near zero for small datasets)
-
-----------------------------------------
-
-Verification Summary:
-
-- output_full.csv proves data correctness and lossless conversion.
-- output_selected.csv proves selective column reads using header offsets.
-- benchmark.py demonstrates the efficiency concept of columnar storage.
-
-This project focuses on low-level data engineering concepts such as
-binary file layout, metadata management, compression, and efficient I/O,
-rather than using existing high-level data libraries.
