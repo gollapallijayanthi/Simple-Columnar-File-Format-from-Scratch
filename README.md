@@ -8,50 +8,38 @@ compress it, and allow efficient selective column reads.
 
 Project Structure:
 
+Project Structure:
+
 Simple-Columnar-File-Format/
-│
 ├── README.md
-│   - Project overview and step-by-step verification instructions
-│
+│   └── Project overview and step-by-step verification instructions
 ├── SPEC.md
-│   - Formal binary file format specification
-│
+│   └── Formal binary file format specification
 ├── writer.py
-│   - CSV → custom columnar binary writer with compression
-│
+│   └── CSV → custom columnar binary writer with compression
 ├── reader.py
-│   - Custom columnar file reader with selective column reads
-│
+│   └── Custom columnar file reader with selective column reads
 ├── csv_to_custom.py
-│   - CLI tool to convert CSV into the custom format
-│
+│   └── CLI tool to convert CSV into the custom format
 ├── custom_to_csv.py
-│   - CLI tool to convert custom format back to CSV
-│   - Supports selective column export
-│
+│   └── CLI tool to convert custom format back to CSV
+│       └── Supports selective column export
 ├── generate_big_csv.py
-│   - Utility script to generate a large CSV dataset
-│
+│   └── Utility script to generate a large CSV dataset
 ├── benchmark.py
-│   - Compares CSV scanning vs selective column reads
-│
+│   └── Compares CSV scanning vs selective column reads
 ├── sample.csv
-│   - Small CSV file for basic correctness testing
-│
+│   └── Small CSV file for basic correctness testing
 ├── big_sample.csv
-│   - Large CSV file for performance demonstration
-│
+│   └── Large CSV file for performance demonstration
 ├── sample.custom
-│   - Custom columnar file generated from sample.csv
-│
+│   └── Custom columnar file generated from sample.csv
 ├── big_sample.custom
-│   - Custom columnar file generated from big_sample.csv
-│
+│   └── Custom columnar file generated from big_sample.csv
 ├── output_full.csv
-│   - Full CSV reconstructed from the custom format
-│
+│   └── Full CSV reconstructed from the custom format
 └── output_selected.csv
-    - CSV containing only selected columns
+    └── CSV containing only selected columns
 
 
 
