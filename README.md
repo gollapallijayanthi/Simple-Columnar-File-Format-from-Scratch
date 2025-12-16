@@ -8,8 +8,6 @@ compress it, and allow efficient selective column reads.
 
 Project Structure:
 
-Project Structure:
-
 Simple-Columnar-File-Format/
 ├── README.md
 │   └── Project overview and step-by-step verification instructions
@@ -40,6 +38,7 @@ Simple-Columnar-File-Format/
 │   └── Full CSV reconstructed from the custom format
 └── output_selected.csv
     └── CSV containing only selected columns
+
 
 
 
