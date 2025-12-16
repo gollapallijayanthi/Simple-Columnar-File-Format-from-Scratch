@@ -9,7 +9,7 @@ compress it, and allow efficient selective column reads.
 ````markdown
 Project Structure:
 
-```text
+```
 Simple-Columnar-File-Format/
 ├── README.md
 │   └── Project overview and step-by-step verification instructions
@@ -40,6 +40,7 @@ Simple-Columnar-File-Format/
 │   └── Full CSV reconstructed from the custom format
 └── output_selected.csv
     └── CSV containing only selected columns
+```
 
 README.md
 - Explains the project, verification steps, and expected outputs.
